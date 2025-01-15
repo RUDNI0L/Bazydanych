@@ -8,25 +8,32 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
+    @SuppressWarnings("removal")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(authorizeRequests ->
-                authorizeRequests
-                    .requestMatchers("/login").permitAll() 
-                    .anyRequest().authenticated()
-            )
-            .formLogin(formLogin ->
-                formLogin
-                    .loginPage("/login")
-                    .defaultSuccessUrl("/welcome", true)
-                    .permitAll()
-            )
-            .logout(logout -> 
-                logout.permitAll()
-            );
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests
+                                .requestMatchers("/login", "/register", "/h2-console/**").permitAll()
+                                .anyRequest().authenticated()
+                )
+                .formLogin(formLogin ->
+                        formLogin
+                                .loginPage("/login")
+                                .defaultSuccessUrl("/welcome", true)
+                                .permitAll()
+                )
+                .logout(logout ->
+                        logout.permitAll()
+                )
+                .csrf(csrf -> csrf.disable())
+                .headers(headers -> headers.frameOptions().disable()); 
+
         return http.build();
     }
 }
+
+
+
 
 

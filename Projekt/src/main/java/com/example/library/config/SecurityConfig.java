@@ -19,6 +19,7 @@ public class SecurityConfig {
             .formLogin(formLogin ->
                 formLogin
                     .loginPage("/login")
+                    .defaultSuccessUrl("/welcome", true)
                     .permitAll()
             )
             .logout(logout -> 
@@ -27,3 +28,5 @@ public class SecurityConfig {
         return http.build();
     }
 }
+
+

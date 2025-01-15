@@ -10,4 +10,3 @@ public class LibraryApplication {
         SpringApplication.run(LibraryApplication.class, args);
     }
 }
-

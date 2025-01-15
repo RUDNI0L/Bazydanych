@@ -10,4 +10,10 @@ public class LoginController {
     public String showLoginPage() {
         return "login";
     }
+
+
+@GetMapping("/welcome")
+    public String welcome() {
+        return "welcome";  // Strona powitalna (welcome.html)
+    }
 }

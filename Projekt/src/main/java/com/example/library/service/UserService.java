@@ -11,8 +11,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public void registerUser(String username, String password) {
-        User newUser = new User(username, password); 
+    public void registerUser(String username, String password,Boolean admin) {
+        User newUser = new User(username, password,admin); 
         userRepository.save(newUser);
     }
 }

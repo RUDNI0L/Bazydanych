@@ -1,11 +1,45 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Powitanie</title>
+    <title>Welcome</title>
 </head>
 <body>
-    <h1>Witaj, zalogowałeś się!</h1>
-    <a href="/login">Wyloguj się</a>
+<h1>Welcome Page</h1>
+
+
+<div>
+    <a href="/welcomeAdmin">
+        <button>Go to Admin Page</button>
+    </a>
+</div>
+
+<div>
+    <a href="/logout">
+        <button>Logout</button>
+    </a>
+</div>
+
+<h2>Dostępne książki</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Tytuł</th>
+        <th>Autor</th>
+        <th>Rezerwacja</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.title}"></td>
+        <td th:text="${book.author}"></td>
+        <td>
+            <form th:action="@{/reserve}" method="post">
+                <input type="hidden" th:name="bookId" th:value="${book.id}" />
+                <button type="submit" th:disabled="${book.isReserved}" th:text="${book.isReserved ? 'Zarezerwowana' : 'Zarezerwuj'}"></button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

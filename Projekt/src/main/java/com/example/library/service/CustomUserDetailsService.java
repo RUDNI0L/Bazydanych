@@ -25,6 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         // Przypisanie roli na podstawie wartości admin w bazie danych
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getAdmin() ? "ROLE_ADMIN" : "ROLE_USER");
+        System.out.println("Użytkownik: " + username + ", Rola: " + authority.getAuthority());
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())

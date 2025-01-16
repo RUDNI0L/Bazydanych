@@ -14,8 +14,8 @@ public class UserService {
     private UserRepository userRepository;
 
     // Rejestracja nowego użytkownika z hasłem bez szyfrowania
-    public void registerUser(String username, String password) {
-        User newUser = new User(username, "{noop}" + password);
+    public void registerUser(String username, String password, boolean admin) {
+        User newUser = new User(username, "{noop}" + password, admin);
         userRepository.save(newUser);
 }
 

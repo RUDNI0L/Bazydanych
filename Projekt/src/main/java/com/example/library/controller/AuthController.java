@@ -58,13 +58,13 @@ public class AuthController {
 
     // Obsługa rejestracji
     @PostMapping("/register")
-    public String registerUser(String username, String password, Model model) {
+    public String registerUser(String username, String password, Model model, boolean admin) {
         if (userService.findByUsername(username).isPresent()) {
             model.addAttribute("error", "Użytkownik o tej nazwie już istnieje.");
             return "register";
         }
 
-        userService.registerUser(username, password);
+        userService.registerUser(username, password, admin);
         return "redirect:/login";
     }
 

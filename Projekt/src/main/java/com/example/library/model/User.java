@@ -20,10 +20,10 @@ public class User {
 
     public User() {}
 
-    public User(String username, String password) {
+    public User(String username, String password, boolean admin) {
         this.username = username;
         this.password = password;
-        this.admin = false;
+        this.admin = admin;
     }
 
     // Gettery i settery

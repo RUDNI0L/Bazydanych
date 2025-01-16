@@ -1,11 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Welcome Admin</title>
+    <title>Admin - Lista Książek</title>
 </head>
 <body>
-    <h1>Witaj, Adminie!</h1>
-    <p>Jesteś zalogowany jako administrator.</p>
-    <a href="/logout">Wyloguj się</a>
+<h1>Admin - Zarządzanie Książkami</h1>
+
+<div>
+    <a href="/welcome">
+        <button>Powrót do strony głównej</button>
+    </a>
+</div>
+
+<div>
+    <a href="/logout">
+        <button>Logout</button>
+    </a>
+</div>
+
+<h2>Dostępne książki</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Tytuł</th>
+        <th>Autor</th>
+        <th>Akcja</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.title}"></td>
+        <td th:text="${book.author}"></td>
+        <td>
+            <form th:action="@{/editBook}" method="get">
+                <input type="hidden" th:name="bookId" th:value="${book.id}" />
+                <button type="submit">Edytuj</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{/deleteBook}" method="post">
+                <input type="hidden" th:name="bookId" th:value="${book.id}" />
+                <button type="submit">Usuń</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Dodaj nową książkę</h2>
+<form th:action="@{/addBook}" method="post">
+    <label for="title">Tytuł:</label>
+    <input type="text" id="title" name="title" required />
+    <br />
+    <label for="author">Autor:</label>
+    <input type="text" id="author" name="author" required />
+    <br />
+    <button type="submit">Dodaj książkę</button>
+</form>
+
 </body>
 </html>

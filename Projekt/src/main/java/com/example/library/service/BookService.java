@@ -67,4 +67,32 @@ public class BookService {
         }
         return false;  // Jeśli wypożyczenie nie istnieje
     }
+
+    public boolean deleteBook(Long bookId) {
+        if (bookRepository.existsById(bookId)) {
+            bookRepository.deleteById(bookId);
+            return true;
+        }
+        return false;
+    }
+
+    public void addBook(String title, String author) {
+        Book newBook = new Book(title, author, false); // Domyślnie książka nie jest zarezerwowana
+        bookRepository.save(newBook);
+    }
+
+    public void updateBook(Long bookId, String title, String author, boolean isReserved) {
+        Optional<Book> bookOptional = bookRepository.findById(bookId);
+        if (bookOptional.isPresent()) {
+            Book book = bookOptional.get();
+            book.setTitle(title);
+            book.setAuthor(author);
+            book.setReserved(isReserved);
+            bookRepository.save(book);
+        }
+    }
+
+    public Optional<Book> getBookById(Long bookId) {
+        return bookRepository.findById(bookId);
+    }
 }

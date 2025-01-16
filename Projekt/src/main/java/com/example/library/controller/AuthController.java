@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
@@ -56,7 +57,9 @@ public class AuthController {
     }
 
     @GetMapping("/welcomeAdmin")
-    public String welcomeAdmin() {
+    public String welcomeAdmin(Model model) {
+        List<Book> books = bookService.getAvailableBooks(); // Pobranie wszystkich książek
+        model.addAttribute("books", books);
         return "welcomeAdmin";
     }
 
@@ -163,5 +166,50 @@ public class AuthController {
         return "yourRentals";
     }
 
+    @PostMapping("/deleteBook")
+    public String deleteBook(Long bookId) {
+        bookService.deleteBook(bookId);
+        return "redirect:/welcomeAdmin";
+    }
+
+    @PostMapping("/addBook")
+    public String addBook(String title, String author) {
+        bookService.addBook(title, author);
+        return "redirect:/welcomeAdmin";
+    }
+
+    @GetMapping("/editBook")
+    public String editBookForm(@RequestParam Long bookId, Model model) {
+        Optional<Book> bookOptional = bookService.getBookById(bookId);
+        if (bookOptional.isPresent()) {
+            model.addAttribute("book", bookOptional.get());
+            return "editBook"; // Widok formularza edycji
+        } else {
+            return "redirect:/welcomeAdmin"; // Jeśli książka nie istnieje, wracamy do listy
+        }
+    }
+
+    @PostMapping("/editBook")
+    public String editBook(
+            @RequestParam Long bookId,
+            @RequestParam String title,
+            @RequestParam String author,
+            @RequestParam(required = false, defaultValue = "false") Boolean isReserved,
+            Model model) {
+
+
+        if (title == null || title.trim().isEmpty()) {
+            model.addAttribute("error", "Tytuł nie może być pusty.");
+            return "editBook";
+        }
+
+        if (author == null || author.trim().isEmpty()) {
+            model.addAttribute("error", "Autor nie może być pusty.");
+            return "editBook";
+        }
+
+        bookService.updateBook(bookId, title, author, isReserved != null && isReserved);
+        return "redirect:/welcomeAdmin";
+    }
 
 }

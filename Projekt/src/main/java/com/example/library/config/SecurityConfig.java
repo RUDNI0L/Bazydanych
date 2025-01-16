@@ -14,7 +14,7 @@ public class SecurityConfig {
         http
             .authorizeRequests()
                 .requestMatchers("/login", "/register", "/h2-console/**").permitAll()  
-                .requestMatchers("/welcomeAdmin").hasAuthority("ROLE_ADMIN")  // Sprawdzanie roli z prefiksem "ROLE_"
+                .requestMatchers("/welcomeAdmin", "/editBook").hasAuthority("ROLE_ADMIN")  // Sprawdzanie roli z prefiksem "ROLE_"
                 .requestMatchers("/welcome").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                 .anyRequest().authenticated() 
             .and()

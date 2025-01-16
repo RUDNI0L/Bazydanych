@@ -1,8 +1,11 @@
 package com.example.library.controller;
 
 import java.util.List;
-import java.util.Optional;  // Import dla Optional
-import com.example.library.model.User;  // Import dla klasy User
+import java.util.Optional;
+
+import com.example.library.model.Rental;
+import com.example.library.model.User;
+import com.example.library.service.RentalService;
 import com.example.library.service.UserService;
 import com.example.library.model.Book;
 import com.example.library.service.BookService;
@@ -11,6 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 
 @Controller
 public class AuthController {
@@ -20,6 +26,10 @@ public class AuthController {
 
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private RentalService rentalService;
+
 
     // Wyświetla stronę logowania
     @GetMapping("/login")
@@ -33,10 +43,10 @@ public class AuthController {
         boolean isAuthenticated = userService.authenticate(username, password);
 
         if (isAuthenticated) {
-            // Sprawdzenie, czy użytkownik jest administratorem
+            // Sprawdzenie czy użytkownik jest admininem
             Optional<User> userOpt = userService.findByUsername(username);
             if (userOpt.isPresent() && userOpt.get().getAdmin()) {
-                return "redirect:/welcomeAdmin";  // Jeśli admin, przekierowanie do welcomeAdmin
+                return "redirect:/welcomeAdmin";
             }
             return "redirect:/welcome";
         } else {
@@ -74,4 +84,84 @@ public class AuthController {
         model.addAttribute("books", books);
         return "welcome";
     }
+
+
+    @PostMapping("/reserve")
+    public String reserveBook(Long bookId, Model model) {
+
+        // Pobranie aktualnie zalogowanego użytkownika
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+
+        Optional<User> userOpt = userService.findByUsername(username);
+        if (userOpt.isEmpty()) {
+            model.addAttribute("error", "Nie znaleziono użytkownika.");
+            return "welcome";
+        }
+
+        User user = userOpt.get();
+        Long userId = user.getId();
+
+        boolean success = bookService.rentBook(bookId, userId);
+
+        if (success) {
+            model.addAttribute("success", "Książka została pomyślnie zarezerwowana.");
+        } else {
+            model.addAttribute("error", "Nie udało się zarezerwować książki.");
+        }
+
+        // Odświeżenie listy książek
+        List<Book> books = bookService.getAvailableBooks();
+        model.addAttribute("books", books);
+        return "welcome";
+    }
+
+    @GetMapping("/yourRentals")
+    public String yourRentals(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName(); // Nazwa użytkownika
+        Optional<User> userOpt = userService.findByUsername(username);
+
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+
+            // Wypożyczenia aktualnie zalogowanego uzytkownika
+            List<Rental> rentals = rentalService.getRentalsByUserId(user.getId());
+
+            model.addAttribute("rentals", rentals);
+        } else {
+            model.addAttribute("error", "Nie znaleziono użytkownika.");
+        }
+
+        return "yourRentals";
+    }
+
+    @PostMapping("/returnBook")
+    public String returnBook(Long rentalId, Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        Optional<User> userOptional = userService.findByUsername(username);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            boolean success = bookService.returnBook(rentalId);
+            if (success) {
+                model.addAttribute("success", "Książka została pomyślnie oddana.");
+            } else {
+                model.addAttribute("error", "Nie udało się oddać książki.");
+            }
+
+            List<Rental> rentals = rentalService.getRentalsByUserId(user.getId());
+            model.addAttribute("rentals", rentals);
+        } else {
+            model.addAttribute("error", "Nie znaleziono użytkownika.");
+        }
+
+        return "yourRentals";
+    }
+
+
 }

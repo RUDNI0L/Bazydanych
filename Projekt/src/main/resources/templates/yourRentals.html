@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Twoje Wypożyczenia</title>
+</head>
+<body>
+<h1>Twoje Wypożyczenia</h1>
+<a href="/welcome">
+    <button>Powrót do strony głównej</button>
+</a>
+
+<h2>Wypożyczone książki:</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Tytuł książki</th>
+        <th>Autor</th>
+        <th>Operacje</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="rental : ${rentals}">
+        <td th:text="${rental.book.title}"></td>
+        <td th:text="${rental.book.author}"></td>
+        <td>
+            <form th:action="@{/returnBook}" method="post">
+                <input type="hidden" th:name="rentalId" th:value="${rental.id}" />
+                <button type="submit">Oddaj książkę</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
